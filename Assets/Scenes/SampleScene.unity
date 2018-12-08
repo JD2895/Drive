@@ -155,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hazard: {fileID: 1274078746759708, guid: 493120bda80589c42867d92660298f85, type: 2}
   player: {fileID: 1733597334}
-  max_haz: 50
+  max_haz: 20
   difficulty: 5
   haz_count: 0
 --- !u!1 &519420028

@@ -8,20 +8,38 @@ public class PlayerMovement : MonoBehaviour {
     public float steering = 2.5f;
     public float setSpeed = 1.0f;
     public float maxSpeed = 5.0f;
+    private int pressed;    //keeps track if a key is already pressed
 
     private Rigidbody2D rb;
 
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
+        pressed = 0;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
         // -- Get input --
-        float h = -Input.GetAxis("Horizontal");
+        // Use 'pressed' to ensure one key press cant overide another
+        float h = 0f;
+        if (Input.GetKey("left") && (pressed >= 0))
+        {
+            h = 1f;
+            pressed = 1;
+        }
+        else if (Input.GetKey("right") && (pressed <= 0))
+        {
+            h = -1f;
+            pressed = -1;
+        } else
+        {
+            h = 0f;
+            pressed = 0;
+        }
+
+        // Set vertical speed
         float v = setSpeed;
-        //float v = Input.GetAxis("Vertical");
 
         // -- Calculate speed from input and acceleration (transform.up is forward) --
         // Determines speed
@@ -53,7 +71,6 @@ public class PlayerMovement : MonoBehaviour {
             steeringRightAngle = 90;
         }
 
-        
         // Quaternion AngleAxis(float angle, Vector3 axis) - Creates a rotation which rotates angle degrees around axis.
         // Rotations are done in the syntax: rotation_to_be_done = quaternion * rotation_rotation_to_be_done;
         Vector2 rightAngleFromForward = Quaternion.AngleAxis(steeringRightAngle, Vector3.forward) * forward;
@@ -65,18 +82,28 @@ public class PlayerMovement : MonoBehaviour {
 
         rb.AddForce(rb.GetRelativeVector(relativeForce));
 
-        //Debug.Log("H= " + h);
-        //Debug.Log("ANG ROT= " + rb.rotation);
-        //Debug.Log("ANG VEL= " + rb.angularVelocity);
-        // Debug.Log("DIR= " + direction);
-        // Debug.Log("VEL= " + rb.velocity);
-
         // Force max speed limit
         if (rb.velocity.magnitude > maxSpeed)
         {
             rb.velocity = rb.velocity.normalized * maxSpeed;
         }
+
+        if (pressed == 1 && Input.GetKeyDown("right"))
+        {
+            rb.AddForce(new Vector3(20, 0, 0), ForceMode2D.Impulse);
+        } else if (pressed == -1 && Input.GetKeyDown("left"))
+        {
+            rb.AddForce(new Vector3(0, 20, 0), ForceMode2D.Impulse);
+        }
+
+        // --- OPTIONAL ---
         // currentSpeed = rb.velocity.magnitude;    // create a private variable "currentSpeed" if you want to track current speed
 
+            // Debug.Log("H= " + h);
+            // Debug.Log("ANG ROT= " + rb.rotation);
+            // Debug.Log("ANG VEL= " + rb.angularVelocity);
+            // Debug.Log("DIR= " + direction);
+            // Debug.Log("VEL= " + rb.velocity);
+            // Debug.Log(Input.GetKey("left"));
     }
 }
